@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="none" stroke="url(#accentGrad)" stroke-width="6" opacity="0.4" />
+
+  <!-- Dumbbell / Gym Match Stylized Icon -->
+  <g transform="translate(256, 256)">
+    <!-- Center bar -->
+    <rect x="-110" y="-14" width="220" height="28" rx="14" fill="#f8fafc" />
+    
+    <!-- Left weight plates -->
+    <rect x="-140" y="-70" width="30" height="140" rx="12" fill="url(#accentGrad)" />
+    <rect x="-176" y="-95" width="28" height="190" rx="14" fill="url(#cyanGrad)" />
+    <rect x="-192" y="-50" width="16" height="100" rx="8" fill="#f8fafc" opacity="0.8" />
+
+    <!-- Right weight plates -->
+    <rect x="110" y="-70" width="30" height="140" rx="12" fill="url(#accentGrad)" />
+    <rect x="148" y="-95" width="28" height="190" rx="14" fill="url(#cyanGrad)" />
+    <rect x="176" y="-50" width="16" height="100" rx="8" fill="#f8fafc" opacity="0.8" />
+
+    <!-- Center GymMatch 'G' badge -->
+    <circle cx="0" cy="0" r="48" fill="#0f172a" stroke="url(#accentGrad)" stroke-width="8" />
+    <path d="M 12 -18 C -14 -22 -26 -4 -22 14 C -18 30 -2 34 16 26 L 16 6 L 0 6" fill="none" stroke="#34d399" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+
+  <!-- City of Linz text badge -->
+  <text x="256" y="440" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#94a3b8" text-anchor="middle" letter-spacing="4">LINZ • AUSTRIA</text>
+</svg>

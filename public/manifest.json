@@ -1,0 +1,48 @@
+{
+  "name": "GymMatch Linz",
+  "short_name": "GymMatch",
+  "description": "On-demand personal training booking platform across partner gyms in Linz, Austria",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["fitness", "lifestyle", "health"],
+  "shortcuts": [
+    {
+      "name": "My Check-in Pass",
+      "short_name": "Pass",
+      "description": "View dynamic QR check-in pass",
+      "url": "/?tab=passes",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Reception Scanner",
+      "short_name": "Scan",
+      "description": "Scan and validate gym check-in passes",
+      "url": "/?role=reception",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}
