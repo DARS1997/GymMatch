@@ -238,3 +238,176 @@ export function verifyDynamicQRToken(
     payload,
   };
 }
+
+export interface TokenInspectionResult {
+  valid: boolean;
+  payload: QRPayload | null;
+  rawPayload: Record<string, unknown> | null;
+  error?: string;
+  status: 'valid' | 'expired' | 'not_yet_valid' | 'signature_mismatch' | 'malformed';
+  signatureVerified: boolean;
+  timeWindowStatus: 'active' | 'future' | 'expired' | 'unknown';
+  header?: string;
+  signature?: string;
+  expectedSignature?: string;
+}
+
+/**
+ * Diagnostic, read-only inspection of dynamic QR tokens without database mutations.
+ * Evaluates HMAC-SHA256 signature using constant-time comparison and extracts
+ * payload parameters even if expired or tampered.
+ */
+export function inspectDynamicQRToken(
+  token: string,
+  secretKey: string = DEFAULT_QR_SECRET,
+  nowEpochSeconds?: number
+): TokenInspectionResult {
+  if (!token || typeof token !== 'string') {
+    return {
+      valid: false,
+      payload: null,
+      rawPayload: null,
+      error: 'Token must be a non-empty string',
+      status: 'malformed',
+      signatureVerified: false,
+      timeWindowStatus: 'unknown',
+    };
+  }
+
+  const parts = token.trim().split('.');
+  if (parts.length !== 3 || parts[0] !== 'GM1') {
+    return {
+      valid: false,
+      payload: null,
+      rawPayload: null,
+      error: 'Invalid QR token header or format, expected GM1.<payload>.<sig>',
+      status: 'malformed',
+      signatureVerified: false,
+      timeWindowStatus: 'unknown',
+      header: parts[0] || '',
+    };
+  }
+
+  const [header, payloadB64, signatureB64] = parts;
+  const message = `${header}.${payloadB64}`;
+  const expectedSig = hmacSha256Base64Url(message, secretKey);
+
+  let rawPayload: Record<string, unknown> | null = null;
+  let parsedPayload: QRPayload | null = null;
+  try {
+    const jsonStr = base64UrlToString(payloadB64);
+    const parsed = JSON.parse(jsonStr);
+    if (parsed && typeof parsed === 'object') {
+      rawPayload = parsed as Record<string, unknown>;
+      parsedPayload = parsed as QRPayload;
+    }
+  } catch {
+    return {
+      valid: false,
+      payload: null,
+      rawPayload: null,
+      error: 'Corrupt or unparseable JSON payload in token',
+      status: 'malformed',
+      signatureVerified: false,
+      timeWindowStatus: 'unknown',
+      header,
+      signature: signatureB64,
+      expectedSignature: expectedSig,
+    };
+  }
+
+  // Constant-time HMAC comparison
+  let safeEqual = false;
+  if (typeof crypto.timingSafeEqual === 'function') {
+    try {
+      const sigBuf = Buffer.from(signatureB64);
+      const expectedBuf = Buffer.from(expectedSig);
+      if (sigBuf.length === expectedBuf.length) {
+        safeEqual = crypto.timingSafeEqual(sigBuf, expectedBuf);
+      }
+    } catch {
+      safeEqual = false;
+    }
+  } else {
+    if (signatureB64.length === expectedSig.length) {
+      let diff = 0;
+      for (let i = 0; i < signatureB64.length; i++) {
+        diff |= signatureB64.charCodeAt(i) ^ expectedSig.charCodeAt(i);
+      }
+      safeEqual = diff === 0;
+    }
+  }
+
+  const now = nowEpochSeconds ?? Math.floor(Date.now() / 1000);
+  let timeWindowStatus: 'active' | 'future' | 'expired' | 'unknown' = 'unknown';
+
+  if (parsedPayload && typeof parsedPayload.vf === 'number' && typeof parsedPayload.vu === 'number') {
+    if (now < parsedPayload.vf) {
+      timeWindowStatus = 'future';
+    } else if (now > parsedPayload.vu) {
+      timeWindowStatus = 'expired';
+    } else {
+      timeWindowStatus = 'active';
+    }
+  }
+
+  if (!safeEqual) {
+    return {
+      valid: false,
+      payload: parsedPayload,
+      rawPayload,
+      error: 'Cryptographic HMAC signature mismatch or token was tampered with',
+      status: 'signature_mismatch',
+      signatureVerified: false,
+      timeWindowStatus,
+      header,
+      signature: signatureB64,
+      expectedSignature: expectedSig,
+    };
+  }
+
+  if (timeWindowStatus === 'future') {
+    const activationDate = new Date(parsedPayload!.vf * 1000).toISOString();
+    return {
+      valid: false,
+      payload: parsedPayload,
+      rawPayload,
+      error: `Pass is not yet active (activation window: ${activationDate})`,
+      status: 'not_yet_valid',
+      signatureVerified: true,
+      timeWindowStatus,
+      header,
+      signature: signatureB64,
+      expectedSignature: expectedSig,
+    };
+  }
+
+  if (timeWindowStatus === 'expired') {
+    const expirationDate = new Date(parsedPayload!.vu * 1000).toISOString();
+    return {
+      valid: false,
+      payload: parsedPayload,
+      rawPayload,
+      error: `Pass has expired (window closed at: ${expirationDate})`,
+      status: 'expired',
+      signatureVerified: true,
+      timeWindowStatus,
+      header,
+      signature: signatureB64,
+      expectedSignature: expectedSig,
+    };
+  }
+
+  return {
+    valid: true,
+    payload: parsedPayload,
+    rawPayload,
+    status: 'valid',
+    signatureVerified: true,
+    timeWindowStatus: 'active',
+    header,
+    signature: signatureB64,
+    expectedSignature: expectedSig,
+  };
+}
+

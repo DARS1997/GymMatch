@@ -5,19 +5,21 @@ import {
   Gym,
   CoachProfile,
   Booking,
+  BookingStatus,
   CheckInPass,
 } from '@/types/database';
 import {
   LINZ_GYMS,
   LINZ_COACHES,
   LINZ_BOOKINGS,
+  DEFAULT_PORTAL_BOOKINGS,
   LINZ_PASSES,
 } from '@/lib/data/linz-seed';
 import { calculateSplitPayment, eurToCents } from '@/lib/payments/split';
 import { generateDynamicQRToken, DEFAULT_QR_SECRET } from '@/lib/qr/token';
 import { redeemCheckInPass, RedemptionResult } from '@/lib/qr/validator';
 
-export type UserRole = 'client' | 'coach' | 'reception';
+export type UserRole = 'client' | 'coach' | 'gym' | 'manager' | 'reception';
 
 export interface BookingCreationParams {
   coachId: string;
@@ -31,6 +33,8 @@ export interface BookingCreationParams {
 export interface RoleContextValue {
   role: UserRole;
   setRole: (role: UserRole) => void;
+  coachSubMode: 'business' | 'client';
+  setCoachSubMode: (mode: 'business' | 'client') => void;
   gyms: Gym[];
   coaches: CoachProfile[];
   bookings: Booking[];
@@ -42,6 +46,8 @@ export interface RoleContextValue {
   setReceptionGymId: (id: string) => void;
   createBooking: (params: BookingCreationParams) => { booking: Booking; pass: CheckInPass };
   redeemPass: (token: string, targetGymId?: string) => Promise<RedemptionResult>;
+  updateBookingStatus: (bookingId: string, status: BookingStatus, reason?: string) => Promise<void>;
+  refundBooking: (bookingId: string, reason?: string) => Promise<void>;
   isOffline: boolean;
   offlinePassesCount: number;
 }
@@ -52,15 +58,22 @@ const STORAGE_KEY_BOOKINGS = 'gymmatch_linz_bookings';
 const STORAGE_KEY_PASSES = 'gymmatch_linz_passes';
 
 export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [role, setRole] = useState<UserRole>('client');
+  const [role, setRoleState] = useState<UserRole>('client');
+  const [coachSubMode, setCoachSubMode] = useState<'business' | 'client'>('business');
   const [gyms] = useState<Gym[]>(LINZ_GYMS);
   const [coaches] = useState<CoachProfile[]>(LINZ_COACHES);
   const [activeClientId] = useState<string>('11111111-1111-1111-1111-000000000001'); // Max Mustermann
   const [activeCoachId, setActiveCoachId] = useState<string>('44444444-4444-4444-4444-000000000001'); // Lukas Bauer
   const [receptionGymId, setReceptionGymId] = useState<string>('00000000-0000-0000-0000-000000000001'); // John Harris Atrium
-  const [bookings, setBookings] = useState<Booking[]>(LINZ_BOOKINGS);
+  const [bookings, setBookings] = useState<Booking[]>(DEFAULT_PORTAL_BOOKINGS);
   const [passes, setPasses] = useState<CheckInPass[]>(LINZ_PASSES);
   const [isOffline, setIsOffline] = useState<boolean>(false);
+
+  const setRole = (newRole: UserRole) => {
+    const normalizedRole: UserRole = newRole === 'reception' ? 'gym' : newRole;
+    setRoleState(normalizedRole);
+  };
+
 
   // Restore state from localStorage if available (Basement mode caching)
   useEffect(() => {
@@ -70,7 +83,12 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (savedBookings) {
           const parsed = JSON.parse(savedBookings);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            setBookings(parsed);
+            const savedIds = new Set(parsed.map((b: Booking) => b.id));
+            const merged = [
+              ...parsed,
+              ...DEFAULT_PORTAL_BOOKINGS.filter((b) => !savedIds.has(b.id)),
+            ];
+            setBookings(merged);
           }
         }
         const savedPasses = localStorage.getItem(STORAGE_KEY_PASSES);
@@ -234,11 +252,84 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return result;
   };
 
+  const updateBookingStatus = async (
+    bookingId: string,
+    status: BookingStatus,
+    reason?: string
+  ): Promise<void> => {
+    setBookings((prevBookings) => {
+      const bookingIndex = prevBookings.findIndex((b) => b.id === bookingId);
+      if (bookingIndex === -1) return prevBookings;
+
+      const existing = prevBookings[bookingIndex];
+      let gym_floor_fee = existing.gym_floor_fee;
+      let platform_fee = existing.platform_fee;
+      let coach_payout = existing.coach_payout;
+
+      if (status === 'cancelled') {
+        gym_floor_fee = 0;
+        platform_fee = 0;
+        coach_payout = 0;
+      } else if (existing.status === 'cancelled') {
+        // Re-allocating splits when reactivating a cancelled session
+        const split = calculateSplitPayment({
+          grossAmountCents: eurToCents(existing.gross_amount),
+        });
+        gym_floor_fee = split.gymFloorFeeCents / 100;
+        platform_fee = split.platformFeeCents / 100;
+        coach_payout = split.coachPayoutCents / 100;
+      }
+
+      const updatedBooking: Booking = {
+        ...existing,
+        status,
+        gym_floor_fee,
+        platform_fee,
+        coach_payout,
+        cancellation_reason: reason !== undefined ? reason : existing.cancellation_reason,
+        updated_at: new Date().toISOString(),
+      };
+
+      const nextBookings = [...prevBookings];
+      nextBookings[bookingIndex] = updatedBooking;
+      persistState(nextBookings, passes);
+      return nextBookings;
+    });
+  };
+
+  const refundBooking = async (
+    bookingId: string,
+    reason?: string
+  ): Promise<void> => {
+    setBookings((prevBookings) => {
+      const bookingIndex = prevBookings.findIndex((b) => b.id === bookingId);
+      if (bookingIndex === -1) return prevBookings;
+
+      const existing = prevBookings[bookingIndex];
+      const updatedBooking: Booking = {
+        ...existing,
+        status: 'cancelled',
+        gym_floor_fee: 0,
+        platform_fee: 0,
+        coach_payout: 0,
+        cancellation_reason: reason || 'Administrative full refund issued by platform manager',
+        updated_at: new Date().toISOString(),
+      };
+
+      const nextBookings = [...prevBookings];
+      nextBookings[bookingIndex] = updatedBooking;
+      persistState(nextBookings, passes);
+      return nextBookings;
+    });
+  };
+
   return (
     <RoleContext.Provider
       value={{
         role,
         setRole,
+        coachSubMode,
+        setCoachSubMode,
         gyms,
         coaches,
         bookings,
@@ -250,6 +341,8 @@ export const RoleProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setReceptionGymId,
         createBooking,
         redeemPass,
+        updateBookingStatus,
+        refundBooking,
         isOffline,
         offlinePassesCount: passes.length,
       }}
