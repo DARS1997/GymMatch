@@ -120,10 +120,10 @@ export const AvailabilityPicker: React.FC<AvailabilityPickerProps> = ({
         <select
           value={selectedGymId}
           onChange={(e) => setSelectedGymId(e.target.value)}
-          className="w-full bg-slate-950 text-slate-100 border border-slate-700/80 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-emerald-500"
+          className="w-full bg-white text-slate-900 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium focus:outline-none focus:border-emerald-500"
         >
           {gyms.map((g) => (
-            <option key={g.id} value={g.id}>
+            <option key={g.id} value={g.id} className="bg-white text-slate-900">
               {g.name} ({g.postal_code} Linz) — €8.00 Floor Fee
             </option>
           ))}

@@ -182,7 +182,7 @@ export const TokenInspector: React.FC = () => {
           value={tokenInput}
           onChange={(e) => setTokenInput(e.target.value)}
           placeholder="Paste GM1.payload.signature token here..."
-          className="w-full bg-slate-850 text-white font-mono text-[11px] border border-slate-700/80 rounded-xl p-3 focus:outline-none focus:border-emerald-500 placeholder:text-slate-600 leading-relaxed"
+          className="w-full bg-white text-slate-900 font-mono text-[11px] border border-slate-300 rounded-xl p-3 focus:outline-none focus:border-emerald-500 placeholder:text-slate-500 leading-relaxed"
         />
       </div>
 

@@ -73,7 +73,7 @@ export const ManualRedeemModal: React.FC<ManualRedeemModalProps> = ({
               placeholder="Paste GM1.<payload>.<sig> token..."
               value={inputToken}
               onChange={(e) => setInputToken(e.target.value)}
-              className="w-full bg-slate-950 text-slate-200 border border-slate-700 rounded-xl p-2.5 text-xs font-mono focus:outline-none focus:border-sky-500 placeholder:text-slate-600"
+              className="w-full bg-white text-slate-900 border border-slate-300 rounded-xl p-2.5 text-xs font-mono font-medium focus:outline-none focus:border-sky-500 placeholder:text-slate-500"
               required
             />
           </div>

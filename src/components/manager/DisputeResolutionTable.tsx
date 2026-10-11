@@ -197,13 +197,13 @@ export const DisputeResolutionTable: React.FC = () => {
       <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 space-y-3">
         {/* Search Input */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search booking ID, athlete, coach, or Linz venue..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-850 text-white pl-9 pr-3 py-2 rounded-xl text-xs border border-slate-700/80 focus:outline-none focus:border-emerald-500 font-medium placeholder:text-slate-500"
+            className="w-full bg-white text-slate-900 pl-9 pr-3 py-2 rounded-xl text-xs border border-slate-300 focus:outline-none focus:border-emerald-500 font-medium placeholder:text-slate-500"
           />
         </div>
 
@@ -216,14 +216,14 @@ export const DisputeResolutionTable: React.FC = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+              className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
             >
-              <option value="all">All Statuses ({bookings.length})</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="checked_in">Checked In</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="pending">Pending</option>
+              <option value="all" className="bg-white text-slate-900">All Statuses ({bookings.length})</option>
+              <option value="confirmed" className="bg-white text-slate-900">Confirmed</option>
+              <option value="checked_in" className="bg-white text-slate-900">Checked In</option>
+              <option value="completed" className="bg-white text-slate-900">Completed</option>
+              <option value="cancelled" className="bg-white text-slate-900">Cancelled</option>
+              <option value="pending" className="bg-white text-slate-900">Pending</option>
             </select>
           </div>
 
@@ -234,11 +234,11 @@ export const DisputeResolutionTable: React.FC = () => {
             <select
               value={gymFilter}
               onChange={(e) => setGymFilter(e.target.value)}
-              className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+              className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
             >
-              <option value="all">All Linz Gyms ({gyms.length})</option>
+              <option value="all" className="bg-white text-slate-900">All Linz Gyms ({gyms.length})</option>
               {gyms.map((g) => (
-                <option key={g.id} value={g.id}>
+                <option key={g.id} value={g.id} className="bg-white text-slate-900">
                   {g.name}
                 </option>
               ))}
@@ -536,13 +536,13 @@ export const DisputeResolutionTable: React.FC = () => {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as BookingStatus)}
-                  className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg p-2 font-medium"
+                  className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg p-2 font-medium focus:outline-none focus:border-emerald-500"
                 >
-                  <option value="pending">pending</option>
-                  <option value="confirmed">confirmed</option>
-                  <option value="checked_in">checked_in</option>
-                  <option value="completed">completed</option>
-                  <option value="cancelled">cancelled</option>
+                  <option value="pending" className="bg-white text-slate-900">pending</option>
+                  <option value="confirmed" className="bg-white text-slate-900">confirmed</option>
+                  <option value="checked_in" className="bg-white text-slate-900">checked_in</option>
+                  <option value="completed" className="bg-white text-slate-900">completed</option>
+                  <option value="cancelled" className="bg-white text-slate-900">cancelled</option>
                 </select>
               </div>
 
@@ -555,7 +555,7 @@ export const DisputeResolutionTable: React.FC = () => {
                   placeholder="e.g. Reception hardware failure manual check-in verification"
                   value={overrideReason}
                   onChange={(e) => setOverrideReason(e.target.value)}
-                  className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg p-2 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg p-2 placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
             </div>
@@ -618,7 +618,7 @@ export const DisputeResolutionTable: React.FC = () => {
                 placeholder="e.g. Trainer illness, facility power outage"
                 value={refundReason}
                 onChange={(e) => setRefundReason(e.target.value)}
-                className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg p-2 placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
+                className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg p-2 placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
               />
             </div>
 

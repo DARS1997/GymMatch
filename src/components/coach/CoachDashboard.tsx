@@ -52,10 +52,10 @@ export const CoachDashboard: React.FC = () => {
           <select
             value={activeCoachId}
             onChange={(e) => setActiveCoachId(e.target.value)}
-            className="bg-slate-950 text-slate-300 border border-slate-700 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-emerald-500 font-medium"
+            className="bg-white text-slate-900 border border-slate-300 text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-emerald-500 font-medium"
           >
             {coaches.map((c) => (
-              <option key={c.id} value={c.id}>
+              <option key={c.id} value={c.id} className="bg-white text-slate-900">
                 {c.full_name}
               </option>
             ))}

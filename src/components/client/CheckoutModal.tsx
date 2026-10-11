@@ -176,7 +176,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 placeholder="e.g. Focus on deadlift technique and mobility..."
                 value={clientNotes}
                 onChange={(e) => setClientNotes(e.target.value)}
-                className="w-full bg-slate-950 text-slate-200 border border-slate-700/80 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 placeholder:text-slate-500"
+                className="w-full bg-white text-slate-900 border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 placeholder:text-slate-500 font-medium"
               />
             </div>
 

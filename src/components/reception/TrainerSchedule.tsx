@@ -355,7 +355,7 @@ export const TrainerSchedule: React.FC = () => {
               type="date"
               value={customDate}
               onChange={(e) => setCustomDate(e.target.value)}
-              className="bg-slate-850 text-white border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500"
+              className="bg-white text-slate-900 border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500 font-medium"
             />
           </div>
         )}
@@ -370,11 +370,11 @@ export const TrainerSchedule: React.FC = () => {
             <select
               value={selectedCoachId}
               onChange={(e) => setSelectedCoachId(e.target.value)}
-              className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+              className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
             >
-              <option value="all">All Trainers</option>
+              <option value="all" className="bg-white text-slate-900">All Trainers</option>
               {coaches.map((c) => (
-                <option key={c.id} value={c.id}>
+                <option key={c.id} value={c.id} className="bg-white text-slate-900">
                   {c.full_name}
                 </option>
               ))}
@@ -389,13 +389,13 @@ export const TrainerSchedule: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="w-full bg-slate-850 text-white border border-slate-700 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+              className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-emerald-500 font-medium"
             >
-              <option value="all">All Statuses</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="checked_in">Checked In</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="all" className="bg-white text-slate-900">All Statuses</option>
+              <option value="confirmed" className="bg-white text-slate-900">Confirmed</option>
+              <option value="checked_in" className="bg-white text-slate-900">Checked In</option>
+              <option value="completed" className="bg-white text-slate-900">Completed</option>
+              <option value="cancelled" className="bg-white text-slate-900">Cancelled</option>
             </select>
           </div>
         </div>

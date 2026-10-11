@@ -61,3 +61,23 @@ html {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Universal Form Control Styling: High-contrast black text on white background */
+input,
+select,
+textarea {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+option {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+

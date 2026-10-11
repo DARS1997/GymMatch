@@ -90,7 +90,7 @@ export const AvailabilityManager: React.FC = () => {
                 type="time"
                 value={newStartTime}
                 onChange={(e) => setNewStartTime(e.target.value)}
-                className="w-full bg-slate-950 text-slate-100 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono"
+                className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-mono font-medium focus:outline-none focus:border-emerald-500"
                 required
               />
             </div>
@@ -103,7 +103,7 @@ export const AvailabilityManager: React.FC = () => {
                 type="time"
                 value={newEndTime}
                 onChange={(e) => setNewEndTime(e.target.value)}
-                className="w-full bg-slate-950 text-slate-100 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-mono"
+                className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-mono font-medium focus:outline-none focus:border-emerald-500"
                 required
               />
             </div>
@@ -116,10 +116,10 @@ export const AvailabilityManager: React.FC = () => {
             <select
               value={newGymId}
               onChange={(e) => setNewGymId(e.target.value)}
-              className="w-full bg-slate-950 text-slate-100 border border-slate-700 rounded-lg px-2 py-1.5 text-xs"
+              className="w-full bg-white text-slate-900 border border-slate-300 rounded-lg px-2 py-1.5 text-xs font-medium focus:outline-none focus:border-emerald-500"
             >
               {gyms.map((g) => (
-                <option key={g.id} value={g.id}>
+                <option key={g.id} value={g.id} className="bg-white text-slate-900">
                   {g.name} ({g.postal_code} Linz)
                 </option>
               ))}

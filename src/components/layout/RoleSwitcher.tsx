@@ -48,10 +48,10 @@ export const RoleSwitcher: React.FC = () => {
           <select
             value={receptionGymId}
             onChange={(e) => setReceptionGymId(e.target.value)}
-            className="bg-slate-850 text-slate-200 border border-slate-700 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500 font-medium"
+            className="bg-white text-slate-900 border border-slate-300 rounded px-2 py-1 text-xs focus:outline-none focus:border-emerald-500 font-medium"
           >
             {gyms.map((g) => (
-              <option key={g.id} value={g.id} className="bg-slate-900 text-slate-100">
+              <option key={g.id} value={g.id} className="bg-white text-slate-900">
                 {g.name}
               </option>
             ))}
