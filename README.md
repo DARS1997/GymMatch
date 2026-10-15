@@ -169,7 +169,11 @@ interface QRPayload {
 2. **Venue Scoping:** Scanned gym venue ID must strictly match `payload.gid`. Cross-gym scanning (e.g. John Harris pass scanned at Fit Fabrik) is immediately rejected.
 3. **Time Validity Window:** Token check-in is valid only from 30 minutes before session start to 30 minutes after scheduled session conclusion.
 4. **Atomic Compare-and-Swap (CAS) Anti-Replay:**
-   $$\text{UPDATE check\_in\_passes SET is\_redeemed = TRUE, redeemed\_at = NOW() WHERE id = pid AND is\_redeemed = FALSE}$$
+   ```sql
+   UPDATE check_in_passes 
+   SET is_redeemed = TRUE, redeemed_at = NOW() 
+   WHERE id = pid AND is_redeemed = FALSE;
+   ```
    If `is_redeemed` is already `TRUE`, the CAS operation returns `false` and produces `errorCode: 'ALREADY_REDEEMED'`. Screenshots or reused tokens cannot be redeemed a second time.
 
 ---
